@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+/** A helper method that prints out all args passed to it. **/
 int main(int argc, char* argv[]) {
 	
 	int i = 0;

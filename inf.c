@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+/** A helper method that acts as a background process. 
+	Makes its presence known by printing out a tag at an interval (in seconds). **/
 int main(int argc, char* argv[]) {
 	if (argc != 3) {
 		printf("Error: not enough args. Please specify a tag and an interval (in that order)\n");
