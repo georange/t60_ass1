@@ -17,10 +17,10 @@
 typedef struct node {
     pid_t pid;
     struct node* next;
-}
+};
 
 // global variable to keep track of head of queue
-struct node* queue_head;
+struct node* queue_head = {0};
 
 // global variable for list of accepted commands
 char* commands[] = {"bg", "bglist", "bgkill", "bgstop", "bgstart", "pstat"};
