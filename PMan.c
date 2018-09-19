@@ -30,7 +30,7 @@ char* commands[] = {"bg", "bglist", "bgkill", "bgstop", "bgstart", "pstat"};
 int get_command (char* command) {
 	int i;
 	for (i = 0; i < MAX_COMMAND; i++) {
-		if (!strcmp(command, VALID_COMMANDS[i])) {
+		if (!strcmp(command, commands[i])) {
 			return i;
 		}
 	}
