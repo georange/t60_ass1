@@ -68,15 +68,14 @@ int main(){
 			int command = get_command(tok);
 
 			if (command > -1) {
-				int target_pid = parse_pid(strtok(NULL," "));
-				printf ("%d",target_pid);
-				if (target_pid > 0){
-					printf("in");
+				if (tok!=NULL) {
+					int target_pid = parse_pid(strtok(NULL," "));
+				}
+				if (target_pid > -1){
+					
 					
 					// RUN COMMAND WITH COMMAND AND TARGET_PID
 					
-				} else {
-					printf("Error: invalid pid. Please enter an integer.\n");
 				}
 			}
 		}
