@@ -67,7 +67,7 @@ int main(){
 			
 			int command = get_command(tok);
 
-			if (command > 0) {
+			if (command > -1) {
 				int target_pid = parse_pid(strtok(NULL," "));
 				printf ("%d",target_pid);
 				if (target_pid > 0){
