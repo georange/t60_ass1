@@ -69,8 +69,9 @@ int main(){
 
 			if (command > -1) {
 				int target_pid = parse_pid(strtok(NULL," "));
+				printf("%d\n", target_pid);
 				if (target_pid > -1){
-				
+				printf("in\n");
 				// RUN COMMAND WITH COMMAND AND TARGET_PID
 					
 				
