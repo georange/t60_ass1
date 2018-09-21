@@ -52,7 +52,7 @@ int parse_pid (char* pid) {
 
 int main(){
 	while(1) {
-		char *input[MAX_INPUT];
+		char *input = NULL;
 		char *prompt = "PMan: > ";
 
 		input = readline(prompt);
