@@ -66,15 +66,16 @@ int main(){
 			tok = strtok (copy, " "); 	
 			
 			int command = get_command(tok);
-			
-			if (command > 0) {
-				int target_pid = parse_pid(strtok (NULL, " "));
-				if (target_pid > 0){
+			int target_pid = atoi(strtok(NULL," "));
+			printf("%d",target_pid);
+			//if (command > 0) {
+			//	int target_pid = parse_pid(strtok (NULL, " "));
+			//	if (target_pid > 0){
 					
 					// RUN COMMAND WITH COMMAND AND TARGET_PID
 					
-				}
-			}
+			//	}
+			//}
 		}
 
 		//printf("%s\n", input);
