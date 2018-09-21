@@ -66,10 +66,12 @@ int main(){
 			tok = strtok (copy, " "); 	
 			
 			int command = get_command(tok);
-			int target_pid = atoi(strtok(NULL," "));
-			
+
 			if (command > 0) {
+				int target_pid = parse_pid(strtok(NULL," "));
+				printf ("%d",target_pid);
 				if (target_pid > 0){
+					printf("in");
 					
 					// RUN COMMAND WITH COMMAND AND TARGET_PID
 					
