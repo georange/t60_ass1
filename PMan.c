@@ -58,7 +58,7 @@ int main(){
 		input = readline(prompt);
 		
 		// tokenize user input for further parsing
-		if (input) {
+		if (input!=NULL) {
 			/* make a copy of input and tokenize it */
 			char copy[MAX_INPUT];
 			char* tok;
