@@ -58,7 +58,7 @@ int main(){
 		input = readline(prompt);
 		
 		// tokenize user input for further parsing
-		if (input!=NULL) {
+		if (!strcmp(input, "")) {
 			/* make a copy of input and tokenize it */
 			char copy[MAX_INPUT];
 			char* tok;
@@ -68,13 +68,12 @@ int main(){
 			int command = get_command(tok);
 
 			if (command > -1) {
-				while (tok!=NULL) {
-					int target_pid = parse_pid(strtok(NULL," "));
-					if (target_pid && target_pid > -1){
+				int target_pid = parse_pid(strtok(NULL," "));
+				if (target_pid && target_pid > -1){
+				
+				// RUN COMMAND WITH COMMAND AND TARGET_PID
 					
-					// RUN COMMAND WITH COMMAND AND TARGET_PID
-					
-					}
+				
 				}
 			}
 		}
