@@ -10,7 +10,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 
-#define MAX_INPUT 128
+#define MAX_INPUT 200
 #define MAX_COMMAND 6
 
 // node struct to keep track of each process
@@ -20,13 +20,13 @@ typedef struct node {
 };
 
 // global variable to keep track of head of queue
-struct node* queue_head = {0};
+struct node* queue_head = NULL;
 
 // global variable for list of accepted commands
 char* commands[] = {"bg", "bglist", "bgkill", "bgstop", "bgstart", "pstat"};
 
 
-// figures out which command was issued, returns -1 not on the list of accepted commands
+// figures out which command was issued, returns -1 if not on the list of accepted commands
 int get_command (char* command) {
 	int i;
 	for (i = 0; i < MAX_COMMAND; i++) {
@@ -52,12 +52,32 @@ int parse_pid (char* pid) {
 
 int main(){
 	while(1) {
-		char *input = NULL ;
+		char *input[MAX_INPUT];
 		char *prompt = "PMan: > ";
 
 		input = readline(prompt);
+		
+		// tokenize user input for further parsing
+		if (input) {
+			/* make a copy of input and tokenize it */
+			char copy[MAX_INPUT];
+			char* tok;
+			strncpy (copy, input, MAX_INPUT);
+			tok = strtok (copy, " "); 	
+			
+			int command = get_command(tok);
+			
+			if (command > 0) {
+				int target_pid = parse_pid(strtok (NULL, " "));
+				if (target_pid > 0){
+					
+					// RUN COMMAND WITH COMMAND AND TARGET_PID
+					
+				}
+			}
+		}
 
-		printf("%s\n", input);
+		//printf("%s\n", input);
 	}
 	
     exit (0);

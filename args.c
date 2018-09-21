@@ -1,14 +1,16 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
 
-/** A helper method that prints out all args passed to it. **/
+// a helper method that prints out all args passed to it
 int main(int argc, char* argv[]) {
-	
-	int i = 0;
-	for (i = 0; i < args; i++) {
-		printf("\n%s", argv[i]);
+	if (argc < 2) {
+		fprintf(stderr, "Usage: Would like some command-line arguments\n");
+	} else {
+		int i;
+		printf("------------------------------------------------\n");
+		for (i = 0 ; i < argc; ++i) {
+			fprintf(stderr, "Argument No %d: %s\n", i, argv[i]);
+		}
+		printf("------------------------------------------------\n");
 	}
-	
-	exit (0);
+	return 0;
 }
