@@ -68,11 +68,9 @@ int main(){
 			int command = get_command(tok);
 
 			if (command > -1) {
-				if (tok!=NULL) {
+				while (tok!=NULL) {
 					int target_pid = parse_pid(strtok(NULL," "));
-				
-					if (target_pid > -1){
-					
+					if (target_pid && target_pid > -1){
 					
 					// RUN COMMAND WITH COMMAND AND TARGET_PID
 					
