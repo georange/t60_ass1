@@ -28,10 +28,12 @@ char* commands[] = {"bg", "bglist", "bgkill", "bgstop", "bgstart", "pstat"};
 
 // figures out which command was issued, returns -1 if not on the list of accepted commands
 int get_command (char* command) {
-	int i;
-	for (i = 0; i < MAX_COMMAND; i++) {
-		if (!strcmp(command, commands[i])) {
-			return i;
+	if (command) {
+		int i;
+		for (i = 0; i < MAX_COMMAND; i++) {
+			if (!strcmp(command, commands[i])) {
+				return i;
+			}
 		}
 	}
 	
@@ -41,9 +43,11 @@ int get_command (char* command) {
 
 // parses for a valid number to act as pid, returns -1 if not a valid number
 int parse_pid (char* pid) {
-	int val = atoi(pid);
-	if (val) {
-		return val;
+	if (pid) {
+		int val = atoi(pid);
+		if (val) {
+			return val;
+		}
 	}
 	
 	printf("Error: invalid pid. Please enter an integer.\n");
@@ -69,9 +73,12 @@ int main(){
 
 			if (command > -1) {
 				int target_pid = parse_pid(strtok(NULL," "));
-				printf("%d\n", target_pid);
+				//printf("%d\n", target_pid);
+				
 				if (target_pid > -1){
-				printf("in\n");
+				
+				//printf("in\n");
+				
 				// RUN COMMAND WITH COMMAND AND TARGET_PID
 					
 				
