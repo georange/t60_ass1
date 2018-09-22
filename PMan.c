@@ -54,6 +54,47 @@ int parse_pid (char* pid) {
 	return -1;
 }
 
+int run_input (char copy[]) {
+	char* tok;
+	tok = strtok (copy, " "); 
+	
+	// match command to a valid command
+	int command = get_command(tok);
+			
+	// command is bg
+	if (command == 0) {
+		char* program = strtok(NULL," ");
+		if (!program) {
+			printf("Error: arg needed. Please enter the program you wish to run.");
+		} else {
+		
+		}
+		
+	// command is bglist	
+	} else if (command == 1) {
+		char* not_empty = strtok(NULL," ");
+		if (not_empty) {
+			printf("Error: arg not needed for this command. Please try again.");
+		} else {
+			
+		}
+		
+	// command is bgkill, bgstop, bgstart, or pstat 
+	} else if (command > 1) {
+		// parse for a valid pid
+		int target_pid = parse_pid(strtok(NULL," "));
+		
+		//printf("%d\n", target_pid);
+	
+		if (target_pid > -1){
+		// run command with user inputed command and pid
+					
+			// HERE
+		
+		}
+	}
+}
+
 int main(){
 	while(1) {
 		char *input = NULL;
@@ -61,44 +102,13 @@ int main(){
 
 		input = readline(prompt);
 		
-		// parse user unput for command and pid, then run command
+		// if input give, parse and run if possible
 		if (input) {
-			// make a copy of input and tokenize it 
+			// make a copy of input for tokenizing 
 			char copy[MAX_INPUT];
-			char* tok;
 			strncpy (copy, input, MAX_INPUT);
-			tok = strtok (copy, " "); 	
+			run_input(copy);
 			
-			// match command to a valid command
-			int command = get_command(tok);
-			
-			// command is bg
-			if (command == 0) {
-				char* program = strtok(NULL," ");
-				
-			// command is bglist	
-			} else if (command == 1) {
-				char* not_empty = strtok(NULL," ");
-				if (not_empty) {
-					printf("Error: arg not needed for this command. Please try again.");
-				} else {
-					
-				}
-				
-			// command is bgkill, bgstop, bgstart, or pstat 
-			} else if (command > 1) {
-				// parse for a valid pid
-				int target_pid = parse_pid(strtok(NULL," "));
-				
-				//printf("%d\n", target_pid);
-		
-				if (target_pid > -1){
-					// run command with user inputed command and pid
-					
-					// HERE
-				
-				}
-			}
 		}
 		
 		// check for status updates
