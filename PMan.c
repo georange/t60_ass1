@@ -80,7 +80,7 @@ int main(){
 			} else if (command == 1) {
 				char* not_empty = strtok(NULL," ");
 				if (not_empty) {
-					printf("Error: arg not needed for this command. Please try again.")
+					printf("Error: arg not needed for this command. Please try again.");
 				} else {
 					
 				}
