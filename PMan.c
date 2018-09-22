@@ -61,30 +61,49 @@ int main(){
 
 		input = readline(prompt);
 		
-		// tokenize user input for further parsing
+		// parse user unput for command and pid, then run command
 		if (input) {
-			/* make a copy of input and tokenize it */
+			// make a copy of input and tokenize it 
 			char copy[MAX_INPUT];
 			char* tok;
 			strncpy (copy, input, MAX_INPUT);
 			tok = strtok (copy, " "); 	
 			
+			// match command to a valid command
 			int command = get_command(tok);
-
-			if (command > -1) {
-				int target_pid = parse_pid(strtok(NULL," "));
-				//printf("%d\n", target_pid);
+			
+			// command is bg
+			if (command == 0) {
+				char* program = strtok(NULL," ");
 				
-				if (target_pid > -1){
-				
-				//printf("in\n");
-				
-				// RUN COMMAND WITH COMMAND AND TARGET_PID
+			// command is bglist	
+			} else if (command == 1) {
+				char* not_empty = strtok(NULL," ");
+				if (not_empty) {
+					printf("Error: arg not needed for this command. Please try again.")
+				} else {
 					
+				}
+				
+			// command is bgkill, bgstop, bgstart, or pstat 
+			} else if (command > 1) {
+				// parse for a valid pid
+				int target_pid = parse_pid(strtok(NULL," "));
+				
+				//printf("%d\n", target_pid);
+		
+				if (target_pid > -1){
+					// run command with user inputed command and pid
+					
+					// HERE
 				
 				}
 			}
 		}
+		
+		// check for status updates
+		
+		// HERE
 
 		//printf("%s\n", input);
 	}
