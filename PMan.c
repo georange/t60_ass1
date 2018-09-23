@@ -37,7 +37,7 @@ void insert(pid_t pid) {
 
     curr->next = malloc(sizeof(struct node));
 	if (!curr->next) {
-		prinf("Error: unsuccessful making new node.\n");
+		printf("Error: unsuccessful making new node.\n");
 		return;
 	}
 	
@@ -66,7 +66,7 @@ void delete(pid_t pid) {
 		curr = curr->next;
 	}
 	
-	prinf("Error: process not found.\n");
+	printf("Error: process not found.\n");
 	return;
 }
 
