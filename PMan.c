@@ -137,8 +137,8 @@ int run_input (char copy[]) {
 		// run command with user inputed command and pid
 					
 			// HERE
-			kill(pid,SIGTERM);
-		
+			int killed = kill(target_pid,SIGTERM);
+			printf("%d\n",killed);	
 		}
 	}
 }
