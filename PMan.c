@@ -18,7 +18,7 @@ typedef struct node {
     pid_t pid;
 //	char* name;
     struct node* next;
-};
+}node;
 
 // global variables to keep track of head of queue, and queue size
 struct node* queue_head = NULL;
