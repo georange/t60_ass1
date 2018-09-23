@@ -16,15 +16,59 @@
 // node struct to keep track of each process
 typedef struct node {
     pid_t pid;
+//	char* name;
     struct node* next;
 };
 
-// global variable to keep track of head of queue
+// global variables to keep track of head of queue, and queue size
 struct node* queue_head = NULL;
+int size = 0;
 
 // global variable for list of accepted commands
 char* commands[] = {"bg", "bglist", "bgkill", "bgstop", "bgstart", "pstat"};
 
+
+// inserts a process node to the end of the queue
+void insert(pid_t pid) {
+    node *curr = queue_head;
+    while (curr->next != NULL) {
+        curr = curr->next;
+    }
+
+    curr->next = malloc(sizeof(node));
+	if (!curr->next) {
+		prinf("Error: unsuccessful making new node.\n");
+		return;
+	}
+	
+    curr->next->pid = pid;
+    curr->next->next = NULL;
+	size++;
+}
+
+// deltes a process node from anywhere in the queue by pid
+void delete(pid_t pid) {
+	node *curr = queue_head;
+	node *prev = NULL;
+
+	while (curr != NULL) {
+		if (curr->pid == pid) {
+			if (curr == queue_head) {
+				queue_head = queue_head->next;
+			} else {
+				prev->next = curr->next;
+			}
+			free(curr);
+			size--;
+			return;
+		}
+		prev = curr;
+		curr = curr->next;
+	}
+	
+	prinf("Error: process not found.\n");
+	return;
+}
 
 // figures out which command was issued, returns -1 if not on the list of accepted commands
 int get_command (char* command) {
@@ -54,6 +98,7 @@ int parse_pid (char* pid) {
 	return -1;
 }
 
+// parses user input and runs command if possible
 int run_input (char copy[]) {
 	char* tok;
 	tok = strtok (copy, " "); 
@@ -65,24 +110,26 @@ int run_input (char copy[]) {
 	if (command == 0) {
 		char* program = strtok(NULL," ");
 		if (!program) {
-			printf("Error: arg needed. Please enter the program you wish to run.");
+			printf("Error: arg needed. Please enter the program you wish to run.\n");
 		} else {
 		
+			// HERE
 		}
 		
 	// command is bglist	
 	} else if (command == 1) {
 		char* not_empty = strtok(NULL," ");
 		if (not_empty) {
-			printf("Error: arg not needed for this command. Please try again.");
+			printf("Error: arg not needed for this command. Please try again.\n");
 		} else {
 			
+			// HERE
 		}
 		
 	// command is bgkill, bgstop, bgstart, or pstat 
 	} else if (command > 1) {
 		// parse for a valid pid
-		int target_pid = parse_pid(strtok(NULL," "));
+		pid_t target_pid = parse_pid(strtok(NULL," "));
 		
 		//printf("%d\n", target_pid);
 	
