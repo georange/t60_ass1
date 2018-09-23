@@ -70,6 +70,18 @@ void delete(pid_t pid) {
 	return;
 }
 
+// checks if a process exists by pid
+int exists(pid_t pid) {
+	struct node *curr = queue_head;
+	while (curr != NULL) {
+		if (curr->pid == pid) {
+			return 1;
+		}
+		curr = curr->next;
+	}
+	return 0;
+}
+
 // figures out which command was issued, returns -1 if not on the list of accepted commands
 int get_command (char* command) {
 	if (command) {
@@ -132,6 +144,12 @@ int run_input (char copy[]) {
 		pid_t target_pid = parse_pid(strtok(NULL," "));
 			
 		if (target_pid > -1){	
+			//check if process exists
+			if (!exists(target_pid)) {
+				printf("Error: Process %d does not exist.\n", target_pid);
+				return;
+			}
+		
 			switch (command) {
 				case 2: {
 					// bgkill
