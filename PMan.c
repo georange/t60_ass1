@@ -86,9 +86,9 @@ int get_command (char* command) {
 } 
 
 // parses for a valid number to act as pid, returns -1 if not a valid number
-int parse_pid (char* pid) {
+pid_t parse_pid (char* pid) {
 	if (pid) {
-		int val = atoi(pid);
+		pid_t val = atoi(pid);
 		if (val) {
 			return val;
 		}
@@ -130,15 +130,34 @@ int run_input (char copy[]) {
 	} else if (command > 1) {
 		// parse for a valid pid
 		pid_t target_pid = parse_pid(strtok(NULL," "));
-		
-		//printf("%d\n", target_pid);
-	
-		if (target_pid > -1){
-		// run command with user inputed command and pid
+			
+		if (target_pid > -1){	
+			switch (command) {
+				case 2: {
+					// bgkill
 					
-			// HERE
-			int killed = kill(target_pid,SIGTERM);
-			printf("%d\n",killed);	
+				} 
+				case 3: {
+					// bgstop
+					
+				}
+				case 4: {
+					// bgstart
+					
+				}
+				case 5: {
+					// pstat
+					
+				}
+				default: {
+					
+					
+				}
+			}
+			
+			// kill returns -1 if failed
+			//int killed = kill(target_pid,SIGTERM);
+			//printf("%d\n",killed);	
 		}
 	}
 }
