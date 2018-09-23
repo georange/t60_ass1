@@ -30,12 +30,12 @@ char* commands[] = {"bg", "bglist", "bgkill", "bgstop", "bgstart", "pstat"};
 
 // inserts a process node to the end of the queue
 void insert(pid_t pid) {
-    node *curr = queue_head;
+    struct node *curr = queue_head;
     while (curr->next != NULL) {
         curr = curr->next;
     }
 
-    curr->next = malloc(sizeof(node));
+    curr->next = malloc(sizeof(struct node));
 	if (!curr->next) {
 		prinf("Error: unsuccessful making new node.\n");
 		return;
@@ -48,8 +48,8 @@ void insert(pid_t pid) {
 
 // deltes a process node from anywhere in the queue by pid
 void delete(pid_t pid) {
-	node *curr = queue_head;
-	node *prev = NULL;
+	struct node *curr = queue_head;
+	struct node *prev = NULL;
 
 	while (curr != NULL) {
 		if (curr->pid == pid) {
