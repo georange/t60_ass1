@@ -252,30 +252,23 @@ void run_input (char copy[]) {
 				return;
 			}
 		
-			printf("%d\n",command);
-			switch (command) {
-				case 2: {
-					// bgkill
-					bgkill(target_pid);
-				} 
-				case 3: {
-					// bgstop
-					bgstop(target_pid);
-				}
-				case 4: {
-					// bgstart
-					bgstart(target_pid);
-				}
-				case 5: {
-					// pstat
-					pstat(target_pid);
-				}
-				default: {
-					printf("Error: command invalid. How did you get here?\n");
-					return;
-				}
-			}
+			if (command == 2) {
+				// bgkill
+				bgkill(target_pid);
+			} else if (command == 3) {
+				// bgstop
+				bgstop(target_pid);
+			} else if (command == 4) {
+				// bgstart
+				bgstart(target_pid);
+			} else if (command == 5) {
+				// pstat
+				pstat(target_pid);
+			} else {
+				printf("Error: command invalid. How did you get here?\n");
+				return;
 				
+			}		
 		}
 	}
 }
