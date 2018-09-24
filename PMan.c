@@ -126,7 +126,7 @@ void bg(char* program, char* more_args[]) {
 	if (child_pid >= 0) {
 		// child process
 		if (child_pid == 0) {   
-			execvp(program, more_args);
+			execvp(program,&more_args);
 			printf("Error: background process failed to start.");
 			exit(1);
 		// parent process
