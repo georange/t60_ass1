@@ -36,6 +36,7 @@ char* commands[] = {"bg", "bglist", "bgkill", "bgstop", "bgstart", "pstat"};
 void insert(pid_t pid, char* name) {
 	if (!queue_head) {
 		queue_head = (struct node*)malloc(sizeof(struct node));
+		queue_head->next = NULL;
 	}
 	
 	struct node *curr = queue_head;
