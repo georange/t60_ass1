@@ -165,7 +165,7 @@ void bglist() {
 
 void bgkill(pid_t pid) {
 	int killed = kill(pid, SIGTERM);
-	if (killed != -1) {
+	if (!killed) {
 		delete(pid);
 		sleep(3);
 	} else {
