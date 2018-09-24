@@ -16,20 +16,24 @@
 // node struct to keep track of each process
 typedef struct node {
     pid_t pid;
-//	char* name;
+	char* name;
     struct node* next;
 }node;
 
-// global variables to keep track of head of queue, and queue size
-struct node* queue_head = NULL;
-int size = 0;
 
-// global variable for list of accepted commands
+/** Global Variables **/
+
+// to keep track of head of queue
+struct node* queue_head = NULL;
+
+// list of accepted commands
 char* commands[] = {"bg", "bglist", "bgkill", "bgstop", "bgstart", "pstat"};
 
 
+/** List Functions **/
+
 // inserts a process node to the end of the queue
-void insert(pid_t pid) {
+void insert(pid_t pid, char* name) {
     struct node *curr = queue_head;
     while (curr->next != NULL) {
         curr = curr->next;
@@ -42,14 +46,14 @@ void insert(pid_t pid) {
 	}
 	
     curr->next->pid = pid;
+	curr->next->name = name;
     curr->next->next = NULL;
-	size++;
 }
 
 // deltes a process node from anywhere in the queue by pid
 void delete(pid_t pid) {
-	struct node *curr = queue_head;
-	struct node *prev = NULL;
+	struct node* curr = queue_head;
+	struct node* prev = NULL;
 
 	while (curr != NULL) {
 		if (curr->pid == pid) {
@@ -59,7 +63,6 @@ void delete(pid_t pid) {
 				prev->next = curr->next;
 			}
 			free(curr);
-			size--;
 			return;
 		}
 		prev = curr;
@@ -72,7 +75,7 @@ void delete(pid_t pid) {
 
 // checks if a process exists by pid
 int exists(pid_t pid) {
-	struct node *curr = queue_head;
+	struct node* curr = queue_head;
 	while (curr != NULL) {
 		if (curr->pid == pid) {
 			return 1;
@@ -81,6 +84,9 @@ int exists(pid_t pid) {
 	}
 	return 0;
 }
+
+
+/** User Input Parsing Functions **/
 
 // figures out which command was issued, returns -1 if not on the list of accepted commands
 int get_command (char* command) {
@@ -98,11 +104,11 @@ int get_command (char* command) {
 } 
 
 // parses for a valid number to act as pid, returns -1 if not a valid number
-pid_t parse_pid (char* pid) {
-	if (pid) {
-		pid_t val = atoi(pid);
-		if (val) {
-			return val;
+pid_t parse_pid (char* input) {
+	if (input) {
+		pid_t pid = atoi(input);
+		if (pid) {
+			return pid;
 		}
 	}
 	
@@ -110,41 +116,81 @@ pid_t parse_pid (char* pid) {
 	return -1;
 }
 
+
+/** Command Functions **/
+
+void bg(char* program) {
+	pid_t child_pid = fork();
+	
+	// check if fork is successful
+	if (child_pid >= 0) {
+		// child process
+		if (child_pid == 0) {   
+			execvp(program, &program);
+			printf("Error: background process failed to start.");
+			exit(1);
+		// parent process
+		} else {		
+			printf("Started background process %s with pid %d\n",program, child_pid);
+			insert(child_pid, program);
+			sleep(3);
+		}
+	} else {
+		printf("Error: fork failed.\n");
+	}
+	
+}
+
+void bglist() {
+	int size = 0;
+	struct node* curr = queue_head;
+	
+	while (curr != NULL) {
+		printf("%d:\t%s\n", curr->pid, curr->name);
+		
+		size++;
+		curr = curr->next;
+	}
+	
+	printf("Total background jobs:\t%d\n", size);
+}
+
+
+/** Main Process Functions **/
+
 // parses user input and runs command if possible
-int run_input (char copy[]) {
+void run_input (char copy[]) {
 	char* tok;
 	tok = strtok (copy, " "); 
 	
 	// match command to a valid command
 	int command = get_command(tok);
-			
-	// command is bg
+	
+	// bg
 	if (command == 0) {
 		char* program = strtok(NULL," ");
 		if (!program) {
 			printf("Error: arg needed. Please enter the program you wish to run.\n");
 		} else {
-		
-			// HERE
+			bg(program);			
 		}
 		
-	// command is bglist	
+	// bglist	
 	} else if (command == 1) {
 		char* not_empty = strtok(NULL," ");
 		if (not_empty) {
 			printf("Error: arg not needed for this command. Please try again.\n");
 		} else {
-			
-			// HERE
+			bglist();
 		}
 		
-	// command is bgkill, bgstop, bgstart, or pstat 
+	// bgkill, bgstop, bgstart, or pstat 
 	} else if (command > 1) {
 		// parse for a valid pid
 		pid_t target_pid = parse_pid(strtok(NULL," "));
 			
 		if (target_pid > -1){	
-			//check if process exists
+			//check if target process exists
 			if (!exists(target_pid)) {
 				printf("Error: Process %d does not exist.\n", target_pid);
 				return;
@@ -168,8 +214,8 @@ int run_input (char copy[]) {
 					
 				}
 				default: {
-					
-					
+					printf("Error: command invalid. How did you get here?");
+					return;
 				}
 			}
 			
