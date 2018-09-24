@@ -1,300 +1,452 @@
-#include <stdio.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <string.h>
+/*
+	University of Victoria
+	Fall 2016
+	CSC 360 Assignment 1
+	Michael Reiter
+	V00831568
+*/
 
-#include <sys/types.h>         
-#include <sys/wait.h>          
-#include <signal.h> 
+#include <unistd.h>            // fork(), execvp()
+#include <string.h>            // strcmp()
+#include <ctype.h>             // isdigit()
+#include <stdio.h>             // printf()
+#include <stdlib.h>            // malloc()
+#include <sys/types.h>         // pid_t
+#include <sys/wait.h>          // waitpid()
+#include <signal.h>            // kill(), SIGTERM, SIGSTOP, SIGCONT
+#include <readline/readline.h> // readline
 
-#include <readline/readline.h>
-#include <readline/history.h>
+/* ---------- Typedefs ---------- */
 
-#define MAX_INPUT 200
-#define MAX_COMMAND 6
+typedef struct node_t {
+	pid_t pid;
+	int isRunning;
+	char* process;
+	struct node_t* next;
+} node_t;
 
-// node struct to keep track of each process
-typedef struct node {
-    pid_t pid;
-	char* name;
-    struct node* next;
-}node;
+/* ---------- Constants and global variables ---------- */
 
+#define TRUE 1
+#define FALSE 0
+#define MAX_INPUT_SIZE 128
+#define COMMANDS_LENGTH 6
 
-/** Global Variables **/
+char* VALID_COMMANDS[] = {
+	"bg",
+	"bgkill",
+	"bgstop",
+	"bgstart",
+	"bglist",
+	"pstat"
+};
 
-// to keep track of head of queue
-struct node* queue_head = NULL;
+node_t* processListHead = NULL;
 
-// list of accepted commands
-char* commands[] = {"bg", "bglist", "bgkill", "bgstop", "bgstart", "pstat"};
+/* ---------- General Helper functions ---------- */
 
-
-/** List Functions **/
-
-// inserts a process node to the end of the queue
-void insert(pid_t pid, char* name) {
-	if (!queue_head) {
-		queue_head = (struct node*)malloc(sizeof(struct node));
-		queue_head->next = (struct node*)malloc(sizeof(struct node));
-		queue_head->next->pid = pid;
-		queue_head->next->name = name;
-		queue_head->next->next = NULL;
-		
-		printf("%s\n",queue_head->next->name);
-		
-	} else {
-		struct node *curr = queue_head;
-		while (curr->next != NULL) {
-			curr = curr->next;
+/*
+	s: a string
+	returns TRUE if the string is a valid integer, FALSE otherwise
+*/
+int isNumber(char* s) {
+	int i;
+	for (i = 0; i < strlen(s); i++) {
+		if (!isdigit(s[i])) {
+			return FALSE;
 		}
+	}
+	return TRUE;
+}
 
-		curr->next = (struct node*)malloc(sizeof(struct node));
-		curr->next->pid = pid;
-		curr->next->name = name;
-		curr->next->next = NULL;
-		
-		printf("%s\n",curr->next->name);
+/*
+	pid: a process id (e.g. 123)
+	returns TRUE if the pid is valid, FALSE otherwise
+*/
+int isExistingProcess(pid_t pid) {
+	node_t* iterator = processListHead;
+	while (iterator != NULL) {
+		if (iterator->pid == pid) {
+			return TRUE;
+		}
+		iterator = iterator->next;
+	}
+	return FALSE;
+}
+
+/*
+	command: a command (e.g. "bg", "bgkill", etc.)
+	returns an integer mapping to that command or -1 if the command is invalid
+*/
+int commandToInt(char* command) {
+	int i;
+	for (i = 0; i < COMMANDS_LENGTH; i++) {
+		if (strcmp(command, VALID_COMMANDS[i]) == 0) {
+			return i;
+		}
+	}
+	return -1;
+}
+
+/*
+	filePath: the path the stat file (e.g. '/proc/123/stat')
+	fileContents: an array of strings to which to write the read file contents
+*/
+void readStat(char* filePath, char** fileContents) {
+	FILE *fp = fopen(filePath, "r");
+	char filestream[1024];
+	if (fp != NULL) {
+		int i = 0;
+		while (fgets(filestream, sizeof(filestream)-1, fp) != NULL) {
+			char* token;
+			token = strtok(filestream, " ");
+			fileContents[i] = token;
+			while (token != NULL) {
+				fileContents[i] = token;
+				token = strtok(NULL, " ");
+				i++;
+			}
+		}
+		fclose(fp);
+	} else {
+		printf("Error: could not read stat file\n");
 	}
 }
 
-// deltes a process node from anywhere in the queue by pid
-void delete(pid_t pid) {
-	struct node* curr = queue_head;
-	struct node* prev = NULL;
+/* ---------- Linked List functions ---------- */
 
-	while (curr != NULL) {
-		if (curr->pid == pid) {
-			if (curr == queue_head) {
-				queue_head = queue_head->next;
+/*
+	pid: a process id (e.g. 123)
+	adds a node with a given pid to the list of processes
+*/
+void addProcessToList(pid_t pid, char* process) {
+	node_t* n = (node_t*)malloc(sizeof(node_t));
+	n->pid = pid;
+	n->process = process;
+	n->isRunning = TRUE;
+	n->next = NULL;
+
+	if (processListHead == NULL) {
+		processListHead = n;
+	} else {
+		node_t* iterator = processListHead;
+		while (iterator->next != NULL) {
+			iterator = iterator->next;
+		}
+		iterator->next = n;
+	}
+}
+
+/*
+	pid: a process id (e.g. 123)
+	removes a node with a given pid from the list of processes
+*/
+void removeProcessFromList(pid_t pid) {
+	if (!isExistingProcess(pid)) {
+		return;
+	}
+	node_t* iterator1 = processListHead;
+	node_t* iterator2 = NULL;
+
+	while (iterator1 != NULL) {
+		if (iterator1->pid == pid) {
+			if (iterator1 == processListHead) {
+				processListHead = processListHead->next;
 			} else {
-				prev->next = curr->next;
+				iterator2->next = iterator1->next;
 			}
-			free(curr);
+			free(iterator1);
 			return;
 		}
-		prev = curr;
-		curr = curr->next;
+		iterator2 = iterator1;
+		iterator1 = iterator1->next;
 	}
-	
-	printf("Error: process not found.\n");
-	return;
 }
 
-// checks if a process exists by pid
-int exists(pid_t pid) {
-	struct node* curr = queue_head;
-	while (curr != NULL) {
-		if (curr->pid == pid) {
-			return 1;
+/*
+	pid: a process id (e.g. 123)
+	returns a node with a given pid to the list of processes
+*/
+node_t* getNodeFromList(pid_t pid) {
+	node_t* iterator = processListHead;
+	while (iterator != NULL) {
+		if (iterator->pid == pid) {
+			return iterator;
 		}
-		curr = curr->next;
+		iterator = iterator->next;
 	}
-	return 0;
+	return NULL;
 }
 
+/* ---------- Commands ---------- */
 
-/** User Input Parsing Functions **/
-
-// figures out which command was issued, returns -1 if not on the list of accepted commands
-int get_command (char* command) {
-	if (command) {
-		int i;
-		for (i = 0; i < MAX_COMMAND; i++) {
-			if (!strcmp(command, commands[i])) {
-				return i;
-			}
-		}
-	}
-	
-	printf("Error: invalid command. Please enter one of these: bg, bglist, bgkill, bgstop, bgstart, pstat.\n");
-	return -1;
-} 
-
-// parses for a valid number to act as pid, returns -1 if not a valid number
-pid_t parse_pid (char* input) {
-	if (input) {
-		pid_t pid = atoi(input);
-		if (pid) {
-			return pid;
-		}
-	}
-	
-	printf("Error: invalid pid. Please enter an integer.\n");
-	return -1;
-}
-
-
-/** Command Functions **/
-
-void bg(char* program, char** more_args) {
-	pid_t child_pid = fork();
-	
-	// check if fork is successful
-	if (child_pid >= 0) {
-		// child process
-		if (child_pid == 0) {   
-			execvp(program, &more_args[0]);
-			printf("Error: background process failed to start.\n");
-			exit(1);
-		// parent process
-		} else {		
-			printf("Started background process %s with pid %d\n",program, child_pid);
-			insert(child_pid, program);
-			sleep(3);
-		}
+/*
+	userInput: a pointer to an array of tokenized user input strings
+	creates a new child process and executes userInput[1] command
+*/
+void bg(char** userInput) {
+	pid_t pid = fork();
+	if (pid == 0) {    // child
+		char* command = userInput[1];
+		execvp(command, &userInput[1]);
+		printf("Error: failed to execute command %s\n", command);
+		exit(1);
+	} else if (pid > 0) {		// parent
+		printf("Started background process %d\n", pid);
+		addProcessToList(pid, userInput[1]);
+		sleep(1);
 	} else {
-		printf("Error: fork failed.\n");
+		printf("Error: failed to fork\n");
 	}
-	
 }
 
-void bglist() {
-	int size = 0;
-	struct node* curr = queue_head->next;
-	
-	printf("%s\n",queue_head->next->name);
-	while (curr != NULL) {
-		printf("%d:\t%s\n", curr->pid, curr->name);
-		size++;
-		curr = curr->next;
-	}
-	
-	printf("Total background jobs:\t%d\n", size);
-}
-
+/*
+	pid: a process id
+	sends the TERM signal to a process pid to terminate it
+*/
 void bgkill(pid_t pid) {
-	int killed = kill(pid, SIGTERM);
-	if (killed != -1) {
-		delete(pid);
-		sleep(3);
+	if (!isExistingProcess(pid)) {
+		printf("Error: invalid pid\n");
+		return;
+	}
+	int error = kill(pid, SIGTERM);
+	if (!error) {
+		sleep(1);
 	} else {
-		printf("Error: bgkill failed.\n");
+		printf("Error: failed to execute bgkill\n");
 	}
 }
 
+/*
+	pid: a process id
+	sends the STOP signal to a process pid to temporarily stop it
+*/
 void bgstop(pid_t pid) {
-	int stopped = kill(pid, SIGSTOP);
-	if (stopped != -1) {
-		sleep(3);
+	if (!isExistingProcess(pid)) {
+		printf("Error: invalid pid\n");
+		return;
+	}
+	int error = kill(pid, SIGSTOP);
+	if (!error) {
+		sleep(1);
 	} else {
-		printf("Error: bgstop failed.\n");
+		printf("Error: failed to execute bgstop\n");
 	}
 }
 
+/*
+	pid: a process id
+	sends the CONT signal to a stopped process pid to restart it
+*/
 void bgstart(pid_t pid) {
-	int started = kill(pid, SIGCONT);
-	if (started != -1) {
-		sleep(3);
+	if (!isExistingProcess(pid)) {
+		printf("Error: invalid pid\n");
+		return;
+	}
+	int error = kill(pid, SIGCONT);
+	if (!error) {
+		sleep(1);
 	} else {
-		printf("Error: bgstart failed.\n");
+		printf("Error: failed to execute bgstart\n");
 	}
 }
 
+/*
+	displays a list of all programs currently executing in the background
+*/
+void bglist() {
+	int count = 0;
+	node_t* iterator = processListHead;
+
+	while (iterator != NULL) {
+		count++;
+		char* stopped = "";
+		if (!iterator->isRunning) {
+			stopped = "(stopped)";
+		}
+		printf("%d:\t %s %s\n", iterator->pid, iterator->process, stopped);
+		iterator = iterator->next;
+	}
+	printf("Total background jobs:\t%d\n", count);
+}
+
+/*
+	pid: a process id
+	lists information relevant to a process pid
+*/
 void pstat(pid_t pid) {
-	
-	// HERE
+	if (isExistingProcess(pid)) {
+		char statPath[MAX_INPUT_SIZE];
+		char statusPath[MAX_INPUT_SIZE];
+		sprintf(statPath, "/proc/%d/stat", pid);
+		sprintf(statusPath, "/proc/%d/status", pid);
+
+		char* statContents[MAX_INPUT_SIZE];
+		readStat(statPath, statContents);
+
+		char statusContents[MAX_INPUT_SIZE][MAX_INPUT_SIZE];
+		FILE* statusFile = fopen(statusPath, "r");
+		if (statusFile != NULL) {
+			int i = 0;
+			while (fgets(statusContents[i], MAX_INPUT_SIZE, statusFile) != NULL) {
+				i++;
+			}
+			fclose(statusFile);
+		} else {
+			printf("Error: could not read status file\n");
+			return;
+		}
+
+		char* p;
+		long unsigned int utime = strtoul(statContents[13], &p, 10) / sysconf(_SC_CLK_TCK);
+		long unsigned int stime = strtoul(statContents[14], &p, 10) / sysconf(_SC_CLK_TCK);
+		char* voluntary_ctxt_switches = statusContents[39];
+		char* nonvoluntary_ctxt_switches = statusContents[40];
+
+		printf("comm:\t%s\n", statContents[1]);
+		printf("state:\t%s\n", statContents[2]);
+		printf("utime:\t%lu\n", utime);
+		printf("stime:\t%lu\n", stime);
+		printf("rss:\t%s\n", statContents[24]);
+		printf("%s", voluntary_ctxt_switches);
+		printf("%s", nonvoluntary_ctxt_switches);
+	} else {
+		printf("Error: Process %d does not exist.\n", pid);
+	}
 }
 
+/* ---------- Main helper functions ---------- */
 
-/** Main Process Functions **/
+/*
+	input: a pointer to an array of strings to contain the tokenized user input
+	tokenizes user input and stores it in input
+	returns TRUE on success, FALSE on error
+*/
+int getUserInput(char** userInput) {
+	char* rawInput = readline("PMan: > ");
+	if (strcmp(rawInput, "") == 0) {
+		return FALSE;
+	}
+	char* token = strtok(rawInput, " ");
+	int i;
+	for (i = 0; i < MAX_INPUT_SIZE; i++) {
+		userInput[i] = token;
+		token = strtok(NULL, " ");
+	}
+	return TRUE;
+}
 
-// parses user input and runs command if possible
-void run_input (char copy[]) {
-	char* tok;
-	tok = strtok (copy, " "); 
-	
-	// match command to a valid command
-	int command = get_command(tok);
-	
-	// bg
-	if (command == 0) {
-		char* program = strtok(NULL," ");
-		if (!program) {
-			printf("Error: arg needed. Please enter the program you wish to run.\n");
-		} else {
-			char* more_args[MAX_INPUT];
-			more_args[0] = program;
+/*
+	input: a pointer to an array of strings containing the tokenized user input
+	executes commands from input
+*/
+void executeUserInput(char** userInput) {
+	int commandInt = commandToInt(userInput[0]);
 
-			//printf("%s\n",more_args[0]);
-			
-			int i = 1;
-			while(program) {
-				program = strtok(NULL," ");
-				if (program) {
-					more_args[i] = program;
-					//printf("%s\n",more_args[i]);
-					i++;
-				}
+	switch (commandInt) {
+		case 0: {
+			if (userInput[1] == NULL) {
+				printf("Error: invalid command to background\n");
+				return;
 			}
-			
-			bg(more_args[0], more_args);			
+			bg(userInput);
+			break;
 		}
-		
-	// bglist	
-	} else if (command == 1) {
-		char* not_empty = strtok(NULL," ");
-		if (not_empty) {
-			printf("Error: arg not needed for this command. Please try again.\n");
-		} else {
+		case 1: {
+			if (userInput[1] == NULL || !isNumber(userInput[1])) {
+				printf("Error: invalid pid\n");
+				return;
+			}
+			pid_t pid = atoi(userInput[1]);
+			if (pid != 0) {
+				bgkill(pid);
+			}
+			break;
+		}
+		case 2: {
+			if (userInput[1] == NULL || !isNumber(userInput[1])) {
+				printf("Error: invalid pid\n");
+				return;
+			}
+			pid_t pid = atoi(userInput[1]);
+			bgstop(pid);
+			break;
+		}
+		case 3: {
+			if (userInput[1] == NULL || !isNumber(userInput[1])) {
+				printf("Error: invalid pid\n");
+				return;
+			}
+			pid_t pid = atoi(userInput[1]);
+			bgstart(pid);
+			break;
+		}
+		case 4:
 			bglist();
-		}
-		
-	// bgkill, bgstop, bgstart, or pstat 
-	} else if (command > 1) {
-		// parse for a valid pid
-		pid_t target_pid = parse_pid(strtok(NULL," "));
-			
-		if (target_pid > -1){	
-			//check if target process exists
-			if (!exists(target_pid)) {
-				printf("Error: Process %d does not exist.\n", target_pid);
+			break;
+		case 5: {
+			if (userInput[1] == NULL || !isNumber(userInput[1])) {
+				printf("Error: invalid pid\n");
 				return;
 			}
-		
-			if (command == 2) {
-				// bgkill
-				bgkill(target_pid);
-			} else if (command == 3) {
-				// bgstop
-				bgstop(target_pid);
-			} else if (command == 4) {
-				// bgstart
-				bgstart(target_pid);
-			} else if (command == 5) {
-				// pstat
-				pstat(target_pid);
-			} else {
-				printf("Error: command invalid. How did you get here?\n");
-				return;
-				
-			}		
+			pid_t pid = atoi(userInput[1]);
+			pstat(pid);
+			break;
+		}
+		default:
+			printf("PMan: > %s:\tcommand not found\n", userInput[0]);
+			break;
+	}
+}
+
+/*
+	updates process list running statuses
+*/
+void updateProcessStatuses() {
+	pid_t pid;
+	int	status;
+	while (TRUE) {
+		pid = waitpid(-1, &status, WCONTINUED | WNOHANG | WUNTRACED);
+		if (pid > 0) {
+			if (WIFSTOPPED(status)) {
+				printf("Background process %d was stopped.\n", pid);
+				node_t* n = getNodeFromList(pid);
+				n->isRunning = FALSE;
+			}
+			if (WIFCONTINUED(status)) {
+				printf("Background process %d was started.\n", pid);
+				node_t* n = getNodeFromList(pid);
+				n->isRunning = TRUE;
+			}
+			if (WIFSIGNALED(status)) {
+				printf("Background process %d was killed.\n", pid);
+				removeProcessFromList(pid);
+			}
+			if (WIFEXITED(status)) {
+				printf("Background process %d terminated.\n", pid);
+				removeProcessFromList(pid);
+			}
+		} else {
+			break;
 		}
 	}
 }
 
-int main(){
-	while(1) {
-		char *input = NULL;
-		char *prompt = "PMan: > ";
+/* ---------- Main ---------- */
 
-		input = readline(prompt);
-		
-		// if input give, parse and run if possible
-		if (input) {
-			// make a copy of input for tokenizing 
-			char copy[MAX_INPUT+1];
-			strncpy (copy, input, MAX_INPUT);
-			run_input(copy);
-			
+/*
+	An interactive prompt that can run processes in the background on Unix
+*/
+int main() {
+	while (TRUE) {
+		char* userInput[MAX_INPUT_SIZE];
+		int success = getUserInput(userInput);
+		updateProcessStatuses();
+		if (success) {
+			executeUserInput(userInput);
 		}
-		
-		// check for status updates
-		
-		// HERE
-
-		//printf("%s\n", input);
+		updateProcessStatuses();
 	}
-	
-    exit (0);
+
+	return 0;
 }
