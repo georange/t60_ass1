@@ -36,21 +36,23 @@ char* commands[] = {"bg", "bglist", "bgkill", "bgstop", "bgstart", "pstat"};
 void insert(pid_t pid, char* name) {
 	if (!queue_head) {
 		queue_head = (struct node*)malloc(sizeof(struct node));
-		queue_head->next = NULL;
-	}
-	
-	struct node *curr = queue_head;
-    while (curr->next != NULL) {
-        curr = curr->next;
-    }
+		queue_head->next = (struct node*)malloc(sizeof(struct node));
+		queue_head->next->pid = pid;
+		queue_head->next->name = name;
+		queue_head->next->next = NULL;
+	} else {
+		struct node *curr = queue_head;
+		while (curr->next != NULL) {
+			curr = curr->next;
+		}
 
-    curr->next = (struct node*)malloc(sizeof(struct node));
-	
-    curr->next->pid = pid;
-	curr->next->name = name;
-    curr->next->next = NULL;
-	
-	printf("%s\n",curr->next->name);
+		curr->next = (struct node*)malloc(sizeof(struct node));
+		
+		curr->next->pid = pid;
+		curr->next->name = name;
+		curr->next->next = NULL;
+	}
+	//printf("%s\n",curr->next->name);
 }
 
 // deltes a process node from anywhere in the queue by pid
