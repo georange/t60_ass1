@@ -40,6 +40,9 @@ void insert(pid_t pid, char* name) {
 		queue_head->next->pid = pid;
 		queue_head->next->name = name;
 		queue_head->next->next = NULL;
+		
+		printf("%s\n",queue_head->next->name);
+		
 	} else {
 		struct node *curr = queue_head;
 		while (curr->next != NULL) {
@@ -47,7 +50,6 @@ void insert(pid_t pid, char* name) {
 		}
 
 		curr->next = (struct node*)malloc(sizeof(struct node));
-		
 		curr->next->pid = pid;
 		curr->next->name = name;
 		curr->next->next = NULL;
