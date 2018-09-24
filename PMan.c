@@ -151,14 +151,13 @@ void bg(char* program, char** more_args) {
 
 void bglist() {
 	int size = 0;
-	struct node* curr = queue_head;
+	struct node* curr = queue_head->next;
 	
 	while (curr != NULL) {
-		curr = curr->next;
 		printf("%d:\t%s\n", curr->pid, curr->name);
 		
 		size++;
-		
+		curr = curr->next;
 	}
 	
 	printf("Total background jobs:\t%d\n", size);
