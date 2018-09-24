@@ -153,9 +153,9 @@ void bglist() {
 	int size = 0;
 	struct node* curr = queue_head->next;
 	
+	printf("%s\n",curr->name);
 	while (curr != NULL) {
 		printf("%d:\t%s\n", curr->pid, curr->name);
-		
 		size++;
 		curr = curr->next;
 	}
@@ -165,7 +165,7 @@ void bglist() {
 
 void bgkill(pid_t pid) {
 	int killed = kill(pid, SIGTERM);
-	if (!killed) {
+	if (killed != -1) {
 		delete(pid);
 		sleep(3);
 	} else {
