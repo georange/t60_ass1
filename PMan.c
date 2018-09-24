@@ -119,7 +119,7 @@ pid_t parse_pid (char* input) {
 
 /** Command Functions **/
 
-void bg(char* program, char** more_args) {
+void bg(char* program, char* more_args) {
 	pid_t child_pid = fork();
 	
 	// check if fork is successful
