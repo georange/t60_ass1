@@ -127,7 +127,7 @@ void bg(char* program, char* more_args[]) {
 		// child process
 		if (child_pid == 0) {   
 			execvp(program, more_args);
-			printf("Error: background process failed to start.");
+			printf("Error: background process failed to start.\n");
 			exit(1);
 		// parent process
 		} else {		
@@ -215,7 +215,12 @@ void run_input (char copy[]) {
 				}
 			}
 			
-			bg(more_args[0], more_args);			
+			while(i>-1) {
+				printf("%s\n",more_args[i]);
+				i--;
+			}
+			
+			//bg(more_args[0], more_args);			
 		}
 		
 	// bglist	
