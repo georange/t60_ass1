@@ -151,13 +151,14 @@ void bg(char* program, char** more_args) {
 
 void bglist() {
 	int size = 0;
-	struct node* curr = queue_head->next;
+	struct node* curr = queue_head;
 	
 	while (curr != NULL) {
+		curr = curr->next;
 		printf("%d:\t%s\n", curr->pid, curr->name);
 		
 		size++;
-		curr = curr->next;
+		
 	}
 	
 	printf("Total background jobs:\t%d\n", size);
@@ -165,8 +166,7 @@ void bglist() {
 
 void bgkill(pid_t pid) {
 	int killed = kill(pid, SIGTERM);
-	
-	if (killed > -1) {
+	if (killed != -1) {
 		delete(pid);
 		sleep(3);
 	} else {
@@ -176,7 +176,7 @@ void bgkill(pid_t pid) {
 
 void bgstop(pid_t pid) {
 	int stopped = kill(pid, SIGSTOP);
-	if (stopped > -1) {
+	if (stopped != -1) {
 		sleep(3);
 	} else {
 		printf("Error: bgstop failed.\n");
@@ -185,7 +185,7 @@ void bgstop(pid_t pid) {
 
 void bgstart(pid_t pid) {
 	int started = kill(pid, SIGCONT);
-	if (started > -1) {
+	if (started != -1) {
 		sleep(3);
 	} else {
 		printf("Error: bgstart failed.\n");
