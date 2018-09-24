@@ -49,6 +49,8 @@ void insert(pid_t pid, char* name) {
     curr->next->pid = pid;
 	curr->next->name = name;
     curr->next->next = NULL;
+	
+	printf("%s\n",curr->next->name);
 }
 
 // deltes a process node from anywhere in the queue by pid
