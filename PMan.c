@@ -206,14 +206,14 @@ void run_input (char copy[]) {
 		} else {
 			char* more_args[MAX_INPUT];
 			more_args[0] = program;
-			
-			printf("%s\n",more_args[0]);
-			
+
 			int i = 1;
 			while(program) {
 				program = strtok(NULL," ");
+				printf("%s\n",program);
 				if (program) {
 					more_args[i] = program;
+					printf("%s\n",more_args[i]);
 					i++;
 				}
 			}
