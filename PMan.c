@@ -39,7 +39,7 @@ void insert(pid_t pid, char* name) {
         curr = curr->next;
     }
 
-    curr->next = malloc(sizeof(struct node));
+    curr->next = (node*)malloc(sizeof(struct node));
 	if (!curr->next) {
 		printf("Error: unsuccessful making new node.\n");
 		return;
@@ -132,7 +132,7 @@ void bg(char* program, char** more_args) {
 		// parent process
 		} else {		
 			printf("Started background process %s with pid %d\n",program, child_pid);
-			//insert(child_pid, program);
+			insert(child_pid, program);
 			sleep(3);
 		}
 	} else {
@@ -157,6 +157,7 @@ void bglist() {
 
 void bgkill(pid_t pid) {
 	int killed = kill(pid, SIGTERM);
+	delete(pid);
 	if (killed > -1) {
 		sleep(3);
 	} else {
