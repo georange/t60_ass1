@@ -160,8 +160,31 @@ void bgkill(pid_t pid) {
 	if (killed > -1) {
 		sleep(3);
 	} else {
-		printf("Error: kill failed.\n");
+		printf("Error: bgkill failed.\n");
 	}
+}
+
+void bgstop(pid_t pid) {
+	int stopped = kill(pid, SIGSTOP);
+	if (stopped > -1) {
+		sleep(3);
+	} else {
+		printf("Error: bgstop failed.\n");
+	}
+}
+
+void bgstart(pid_t pid) {
+	int started = kill(pid, SIGCONT);
+	if (started > -1) {
+		sleep(3);
+	} else {
+		printf("Error: bgstart failed.\n");
+	}
+}
+
+void pstat(pid_t pid) {
+	
+	// HERE
 }
 
 
@@ -185,8 +208,11 @@ void run_input (char copy[]) {
 			more_args[0] = program;
 			int i = 1;
 			while(program) {
-				more_args[i] = strtok(NULL," ");
-				i++;
+				program = strtok(NULL," ");
+				if (program) {
+					more_args[i] = program;
+					i++;
+				}
 			}
 			
 			bg(program, more_args);			
@@ -220,25 +246,22 @@ void run_input (char copy[]) {
 				} 
 				case 3: {
 					// bgstop
-					
+					bgstop(target_pid);
 				}
 				case 4: {
 					// bgstart
-					
+					bgstart(target_pid);
 				}
 				case 5: {
 					// pstat
-					
+					pstat(target_pid);
 				}
 				default: {
 					printf("Error: command invalid. How did you get here?");
 					return;
 				}
 			}
-			
-			// kill returns -1 if failed
-			//int killed = kill(target_pid,SIGTERM);
-			//printf("%d\n",killed);	
+				
 		}
 	}
 }
