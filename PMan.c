@@ -24,7 +24,7 @@ typedef struct node {
 /** Global Variables **/
 
 // to keep track of head of queue
-struct node* queue_head = NULL;
+struct node* queue_head = (struct node*)malloc(sizeof(struct node));
 
 // list of accepted commands
 char* commands[] = {"bg", "bglist", "bgkill", "bgstop", "bgstart", "pstat"};
@@ -35,6 +35,7 @@ char* commands[] = {"bg", "bglist", "bgkill", "bgstop", "bgstart", "pstat"};
 // inserts a process node to the end of the queue
 void insert(pid_t pid, char* name) {
     struct node *curr = queue_head;
+	
     while (curr->next != NULL) {
         curr = curr->next;
     }
