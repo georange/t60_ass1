@@ -119,7 +119,7 @@ pid_t parse_pid (char* input) {
 
 /** Command Functions **/
 
-void bg(char* program, char more_args[]) {
+void bg(char* program, char* more_args[]) {
 	pid_t child_pid = fork();
 	
 	// check if fork is successful
@@ -181,7 +181,8 @@ void run_input (char copy[]) {
 		if (!program) {
 			printf("Error: arg needed. Please enter the program you wish to run.\n");
 		} else {
-			char more_args[MAX_INPUT];
+			char* more_args[MAX_INPUT];
+			more_args[0] = program;
 			int i = 0;
 			while(program) {
 				more_args[i] = strtok(NULL," ");
