@@ -132,7 +132,7 @@ void bg(char* program, char** more_args) {
 		// parent process
 		} else {		
 			printf("Started background process %s with pid %d\n",program, child_pid);
-			insert(child_pid, program);
+			//insert(child_pid, program);
 			sleep(3);
 		}
 	} else {
