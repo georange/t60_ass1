@@ -119,14 +119,14 @@ pid_t parse_pid (char* input) {
 
 /** Command Functions **/
 
-void bg(char* program, char* more_args[]) {
+void bg(char* program, char** more_args) {
 	pid_t child_pid = fork();
 	
 	// check if fork is successful
 	if (child_pid >= 0) {
 		// child process
 		if (child_pid == 0) {   
-			execvp(program, more_args);
+			execvp(program, &more_args);
 			printf("Error: background process failed to start.\n");
 			exit(1);
 		// parent process
@@ -207,14 +207,14 @@ void run_input (char copy[]) {
 			char* more_args[MAX_INPUT];
 			more_args[0] = program;
 
-			printf("%s\n",more_args[0]);
+			//printf("%s\n",more_args[0]);
 			
 			int i = 1;
 			while(program) {
 				program = strtok(NULL," ");
 				if (program) {
 					more_args[i] = program;
-					printf("%s\n",more_args[i]);
+					//printf("%s\n",more_args[i]);
 					i++;
 				}
 			}
