@@ -219,12 +219,7 @@ void run_input (char copy[]) {
 				}
 			}
 			
-			//while(i>-1) {
-				//printf("%s\n",more_args[i]);
-				//i--;
-			//}
-			
-			//bg(more_args[0], more_args);			
+			bg(more_args[0], more_args);			
 		}
 		
 	// bglist	
