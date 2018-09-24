@@ -215,7 +215,7 @@ void run_input (char copy[]) {
 				}
 			}
 			
-			bg(program, more_args);			
+			bg(more_args[0], more_args);			
 		}
 		
 	// bglist	
