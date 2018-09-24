@@ -164,6 +164,21 @@ void bgkill(pid_t pid) {
 	}
 }
 
+void bgstop(pid_t pid) {
+	
+	// HERE
+}
+
+void bgstart(pid_t pid) {
+	
+	// HERE
+}
+
+void pstat(pid_t pid) {
+	
+	// HERE
+}
+
 
 /** Main Process Functions **/
 
@@ -220,15 +235,15 @@ void run_input (char copy[]) {
 				} 
 				case 3: {
 					// bgstop
-					
+					bgstop(target_pid);
 				}
 				case 4: {
 					// bgstart
-					
+					bgstart(target_pid);
 				}
 				case 5: {
 					// pstat
-					
+					pstat(target_pid);
 				}
 				default: {
 					printf("Error: command invalid. How did you get here?");
@@ -253,7 +268,7 @@ int main(){
 		// if input give, parse and run if possible
 		if (input) {
 			// make a copy of input for tokenizing 
-			char copy[MAX_INPUT];
+			char copy[MAX_INPUT+1];
 			strncpy (copy, input, MAX_INPUT);
 			run_input(copy);
 			
