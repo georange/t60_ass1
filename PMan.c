@@ -53,8 +53,9 @@ void insert(pid_t pid, char* name) {
 		curr->next->pid = pid;
 		curr->next->name = name;
 		curr->next->next = NULL;
+		
+		printf("%s\n",curr->next->name);
 	}
-	//printf("%s\n",curr->next->name);
 }
 
 // deltes a process node from anywhere in the queue by pid
@@ -251,6 +252,7 @@ void run_input (char copy[]) {
 				return;
 			}
 		
+			printf("%d\n",command);
 			switch (command) {
 				case 2: {
 					// bgkill
@@ -269,7 +271,7 @@ void run_input (char copy[]) {
 					pstat(target_pid);
 				}
 				default: {
-					printf("Error: command invalid. How did you get here?");
+					printf("Error: command invalid. How did you get here?\n");
 					return;
 				}
 			}
