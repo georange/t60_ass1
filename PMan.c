@@ -126,7 +126,7 @@ void bg(char* program, char* more_args[]) {
 	if (child_pid >= 0) {
 		// child process
 		if (child_pid == 0) {   
-			execvp(program,&more_args);
+			execvp(program,more_args);
 			printf("Error: background process failed to start.");
 			exit(1);
 		// parent process
@@ -253,7 +253,7 @@ int main(){
 		// if input give, parse and run if possible
 		if (input) {
 			// make a copy of input for tokenizing 
-			char copy[MAX_INPUT];
+			char copy[MAX_INPUT+1];
 			strncpy (copy, input, MAX_INPUT);
 			run_input(copy);
 			
