@@ -165,8 +165,9 @@ void bglist() {
 
 void bgkill(pid_t pid) {
 	int killed = kill(pid, SIGTERM);
-	delete(pid);
+	
 	if (killed > -1) {
+		delete(pid);
 		sleep(3);
 	} else {
 		printf("Error: bgkill failed.\n");
