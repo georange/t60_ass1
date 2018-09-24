@@ -39,7 +39,7 @@ void insert(pid_t pid, char* name) {
         curr = curr->next;
     }
 
-    curr->next = malloc(sizeof(node));
+    curr->next = (struct node*)malloc(sizeof(struct node));
 	if (!curr->next) {
 		printf("Error: unsuccessful making new node.\n");
 		return;
