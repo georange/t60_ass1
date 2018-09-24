@@ -155,6 +155,15 @@ void bglist() {
 	printf("Total background jobs:\t%d\n", size);
 }
 
+void bgkill(pid_t pid) {
+	int killed = kill(pid, SIGTERM);
+	if (killed > -1) {
+		sleep(3);
+	} else {
+		printf("Error: kill failed.\n");
+	}
+}
+
 
 /** Main Process Functions **/
 
@@ -199,7 +208,7 @@ void run_input (char copy[]) {
 			switch (command) {
 				case 2: {
 					// bgkill
-					
+					bgkill(target_pid);
 				} 
 				case 3: {
 					// bgstop
