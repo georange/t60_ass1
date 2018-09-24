@@ -183,7 +183,7 @@ void run_input (char copy[]) {
 		} else {
 			char* more_args[MAX_INPUT];
 			more_args[0] = program;
-			int i = 0;
+			int i = 1;
 			while(program) {
 				more_args[i] = strtok(NULL," ");
 				i++;
