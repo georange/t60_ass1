@@ -39,7 +39,8 @@ void insert(pid_t pid, char* name) {
 		//queue_head->next = (struct node*)malloc(sizeof(struct node));
 		
 		queue_head->pid = pid;
-		queue_head->name = name;
+		queue_head->name = malloc(strlen(nam)+1);
+		strcpy(queue_head->name,nam);
 		queue_head->next = NULL;
 		
 		//printf("%s\n",queue_head->next->name);
@@ -52,10 +53,11 @@ void insert(pid_t pid, char* name) {
 
 		curr->next = (struct node*)malloc(sizeof(struct node));
 		curr->next->pid = pid;
-		curr->next->name = name;
+		curr->next->name = malloc(strlen(nam)+1);
+		strcpy(curr->next->name,nam);
 		curr->next->next = NULL;
 		
-		printf("%s\n",curr->next->name);
+		//printf("%s\n",curr->next->name);
 	}
 }
 
@@ -71,6 +73,7 @@ void delete(pid_t pid) {
 			} else {
 				prev->next = curr->next;
 			}
+			free(curr->name);
 			free(curr);
 			return;
 		}
