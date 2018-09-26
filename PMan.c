@@ -132,7 +132,6 @@ pid_t parse_pid (char* input) {
 
 void bg(char* program, char** more_args) {
 	pid_t child_pid = fork();
-	int status;
 	
 	// check if fork is successful
 	if (child_pid >= 0) {
