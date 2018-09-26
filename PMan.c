@@ -130,6 +130,7 @@ pid_t parse_pid (char* input) {
 
 void bg(char* program, char** more_args) {
 	pid_t child_pid = fork();
+	int status;
 	
 	// check if fork is successful
 	if (child_pid >= 0) {
@@ -139,10 +140,13 @@ void bg(char* program, char** more_args) {
 			printf("Error: background process failed to start.\n");
 			exit(1);
 		// parent process
-		} else {		
-			printf("Started background process %s with pid %d\n",program, child_pid);
-			insert(child_pid, program);
-			sleep(3);
+		} else {	
+			wait(&status);
+			if (status != 1) {
+				printf("Started background process %s with pid %d\n",program, child_pid);
+				insert(child_pid, program);
+				sleep(3);
+			}
 		}
 	} else {
 		printf("Error: fork failed.\n");
