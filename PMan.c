@@ -156,13 +156,16 @@ void bg(char* program, char** more_args) {
 
 void bglist() {
 	int size = 0;
-	struct node* curr = queue_head->next;
 	
-	printf("%s\n",queue_head->next->name);
-	while (curr != NULL) {
-		printf("%d:\t%s\n", curr->pid, curr->name);
-		size++;
-		curr = curr->next;
+	if (queue_head) {
+		struct node* curr = queue_head->next;
+	
+		printf("%s\n",queue_head->next->name);
+		while (curr != NULL) {
+			printf("%d:\t%s\n", curr->pid, curr->name);
+			size++;
+			curr = curr->next;
+		}
 	}
 	
 	printf("Total background jobs:\t%d\n", size);
