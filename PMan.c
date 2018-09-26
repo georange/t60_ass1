@@ -42,7 +42,7 @@ void insert(pid_t pid, char* name) {
 		queue_head->name = name;
 		queue_head->next = NULL;
 		
-		printf("%s\n",queue_head->next->name);
+		//printf("%s\n",queue_head->next->name);
 		
 	} else {
 		struct node *curr = queue_head;
@@ -158,7 +158,7 @@ void bglist() {
 	if (queue_head) {
 		struct node* curr = queue_head->next;
 	
-		printf("%s\n",queue_head->next->name);
+		//printf("%s\n",queue_head->next->name);
 		while (curr != NULL) {
 			printf("%d:\t%s\n", curr->pid, curr->name);
 			size++;
