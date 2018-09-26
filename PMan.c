@@ -141,12 +141,10 @@ void bg(char* program, char** more_args) {
 			exit(1);
 		// parent process
 		} else {	
-			wait(&status);
-			if (WEXITSTATUS(status) != 1) {
-				printf("Started background process %s with pid %d\n",program, child_pid);
-				insert(child_pid, program);
-				sleep(3);
-			}
+			printf("Started background process %s with pid %d\n",program, child_pid);
+			insert(child_pid, program);
+			sleep(3);
+			
 		}
 	} else {
 		printf("Error: fork failed.\n");
