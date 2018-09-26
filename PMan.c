@@ -34,7 +34,7 @@ char* commands[] = {"bg", "bglist", "bgkill", "bgstop", "bgstart", "pstat"};
 
 // inserts a process node to the end of the queue
 void insert(pid_t pid, char* name) {
-	struct node temp = {pid, name, NULL};
+	struct node *temp = {pid, name, NULL};
 	
 	if (!queue_head) {
 		queue_head = {NULL, NULL, temp};
