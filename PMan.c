@@ -38,9 +38,9 @@ void insert(pid_t pid, char* name) {
 		queue_head = (struct node*)malloc(sizeof(struct node));
 		queue_head->next = (struct node*)malloc(sizeof(struct node));
 		
-		queue_head->next->pid = malloc(sizeof(pid_t));
+		queue_head->next->pid = (pid_t)malloc(sizeof(pid_t));
 		queue_head->next->pid = pid;
-		queue_head->next->name = malloc(sizeof(char*));
+		queue_head->next->name = (char*)malloc(sizeof(char*));
 		queue_head->next->name = name;
 		queue_head->next->next = NULL;
 		
