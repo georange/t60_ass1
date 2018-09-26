@@ -142,7 +142,7 @@ void bg(char* program, char** more_args) {
 		// parent process
 		} else {	
 			wait(&status);
-			if (WEXITSTATUS(status)) != 1) {
+			if (WEXITSTATUS(status) != 1) {
 				printf("Started background process %s with pid %d\n",program, child_pid);
 				insert(child_pid, program);
 				sleep(3);
