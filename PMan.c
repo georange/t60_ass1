@@ -217,7 +217,7 @@ void run_input (char copy[]) {
 			char* more_args[MAX_INPUT];
 			more_args[0] = program;
 
-			//printf("%s\n",more_args[0]);
+			printf("%s\n",more_args[0]);
 			
 			int i = 1;
 			while(program) {
