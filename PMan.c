@@ -34,16 +34,15 @@ char* commands[] = {"bg", "bglist", "bgkill", "bgstop", "bgstart", "pstat"};
 
 // inserts a process node to the end of the queue
 void insert(pid_t pid, char* name) {
-	struct node *temp = {pid, name, NULL};
-	
 	if (!queue_head) {
-		queue_head = {NULL, NULL, temp};
-		
-		/*queue_head = (struct node*)malloc(sizeof(struct node));
+		queue_head = (struct node*)malloc(sizeof(struct node));
 		queue_head->next = (struct node*)malloc(sizeof(struct node));
+		
+		queue_head->next->pid = malloc(sizeof(pid_t));
 		queue_head->next->pid = pid;
+		queue_head->next->name = malloc(sizeof(char*));
 		queue_head->next->name = name;
-		queue_head->next->next = NULL;*/
+		queue_head->next->next = NULL;
 		
 		printf("%s\n",queue_head->next->name);
 		
@@ -52,19 +51,17 @@ void insert(pid_t pid, char* name) {
 		while (curr->next != NULL) {
 			curr = curr->next;
 		}
-		
-		curr->next = temp;
-		
-		/*curr->next = (struct node*)malloc(sizeof(struct node));
+
+		curr->next = (struct node*)malloc(sizeof(struct node));
 		curr->next->pid = pid;
 		curr->next->name = name;
-		curr->next->next = NULL;*/
+		curr->next->next = NULL;
 		
 		printf("%s\n",curr->next->name);
 	}
 }
 
-// deltes a process node from anywhere in the queue by pid
+// deletes a process node from anywhere in the queue by pid
 void delete(pid_t pid) {
 	struct node* curr = queue_head;
 	struct node* prev = NULL;
