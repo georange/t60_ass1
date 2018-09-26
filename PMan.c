@@ -36,11 +36,11 @@ char* commands[] = {"bg", "bglist", "bgkill", "bgstop", "bgstart", "pstat"};
 void insert(pid_t pid, char* name) {
 	if (!queue_head) {
 		queue_head = (struct node*)malloc(sizeof(struct node));
-		queue_head->next = (struct node*)malloc(sizeof(struct node));
+		//queue_head->next = (struct node*)malloc(sizeof(struct node));
 		
-		queue_head->next->pid = pid;
-		queue_head->next->name = name;
-		queue_head->next->next = NULL;
+		queue_head->pid = pid;
+		queue_head->name = name;
+		queue_head->next = NULL;
 		
 		printf("%s\n",queue_head->next->name);
 		
