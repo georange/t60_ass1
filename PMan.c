@@ -3,9 +3,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <sys/types.h>         
-#include <sys/wait.h>          
-#include <signal.h> 
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <signal.h>
 
 #include <readline/readline.h>
 #include <readline/history.h>
@@ -33,17 +33,18 @@ char* commands[] = {"bg", "bglist", "bgkill", "bgstop", "bgstart", "pstat"};
 /** List Functions **/
 
 // inserts a process node to the end of the queue
-void insert(pid_t pid, char* name) {
+void insert(pid_t pid, char* nam) {
 	if (!queue_head) {
 		queue_head = (struct node*)malloc(sizeof(struct node));
 		//queue_head->next = (struct node*)malloc(sizeof(struct node));
-		
+
 		queue_head->pid = pid;
-		queue_head->name = name;
+		queue_head->name = malloc(strlen(nam)+1);
+		strcpy(queue_head->name,nam);
 		queue_head->next = NULL;
-		
-		printf("%s\n",queue_head->next->name);
-		
+
+		//printf("%s\n",queue_head->next->name);
+
 	} else {
 		struct node *curr = queue_head;
 		while (curr->next != NULL) {
@@ -52,9 +53,10 @@ void insert(pid_t pid, char* name) {
 
 		curr->next = (struct node*)malloc(sizeof(struct node));
 		curr->next->pid = pid;
-		curr->next->name = name;
+		curr->next->name = malloc(strlen(nam)+1);
+		strcpy(curr->next->name,nam);
 		curr->next->next = NULL;
-		
+
 		printf("%s\n",curr->next->name);
 	}
 }
@@ -71,13 +73,14 @@ void delete(pid_t pid) {
 			} else {
 				prev->next = curr->next;
 			}
+			free(curr->name);
 			free(curr);
 			return;
 		}
 		prev = curr;
 		curr = curr->next;
 	}
-	
+
 	printf("Error: process not found.\n");
 	return;
 }
@@ -107,10 +110,10 @@ int get_command (char* command) {
 			}
 		}
 	}
-	
+
 	printf("Error: invalid command. Please enter one of these: bg, bglist, bgkill, bgstop, bgstart, pstat.\n");
 	return -1;
-} 
+}
 
 // parses for a valid number to act as pid, returns -1 if not a valid number
 pid_t parse_pid (char* input) {
@@ -120,7 +123,7 @@ pid_t parse_pid (char* input) {
 			return pid;
 		}
 	}
-	
+
 	printf("Error: invalid pid. Please enter an integer.\n");
 	return -1;
 }
@@ -131,41 +134,41 @@ pid_t parse_pid (char* input) {
 void bg(char* program, char** more_args) {
 	pid_t child_pid = fork();
 	int status;
-	
+
 	// check if fork is successful
 	if (child_pid >= 0) {
 		// child process
-		if (child_pid == 0) {   
+		if (child_pid == 0) {
 			execvp(program, &more_args[0]);
 			printf("Error: background process failed to start.\n");
 			exit(1);
 		// parent process
-		} else {	
+		} else {
 			printf("Started background process %s with pid %d\n",program, child_pid);
 			insert(child_pid, program);
 			sleep(3);
-			
+
 		}
 	} else {
 		printf("Error: fork failed.\n");
 	}
-	
+
 }
 
 void bglist() {
 	int size = 0;
-	
+
 	if (queue_head) {
-		struct node* curr = queue_head->next;
-	
-		printf("%s\n",queue_head->next->name);
+		struct node* curr = queue_head;
+
+		//printf("%s\n",queue_head->next->name);
 		while (curr != NULL) {
 			printf("%d:\t%s\n", curr->pid, curr->name);
 			size++;
 			curr = curr->next;
 		}
 	}
-	
+
 	printf("Total background jobs:\t%d\n", size);
 }
 
@@ -198,7 +201,7 @@ void bgstart(pid_t pid) {
 }
 
 void pstat(pid_t pid) {
-	
+
 	// HERE
 }
 
@@ -208,11 +211,11 @@ void pstat(pid_t pid) {
 // parses user input and runs command if possible
 void run_input (char copy[]) {
 	char* tok;
-	tok = strtok (copy, " "); 
-	
+	tok = strtok (copy, " ");
+
 	// match command to a valid command
 	int command = get_command(tok);
-	
+
 	// bg
 	if (command == 0) {
 		char* program = strtok(NULL," ");
@@ -223,25 +226,25 @@ void run_input (char copy[]) {
 			more_args[0] = program;
 
 			//printf("%s\n",more_args[0]);
-			
+
 			int i = 1;
 			while(program) {
 				program = strtok(NULL," ");
 				if (program) {
 					more_args[i] = program;
-					
+
 					//printf("%s\n",more_args[i]);
-					
+
 					i++;
 				}
 			}
 			i++;
 			more_args[i] = NULL;
-			
-			bg(more_args[0], more_args);			
+
+			bg(more_args[0], more_args);
 		}
-		
-	// bglist	
+
+	// bglist
 	} else if (command == 1) {
 		char* not_empty = strtok(NULL," ");
 		if (not_empty) {
@@ -249,19 +252,19 @@ void run_input (char copy[]) {
 		} else {
 			bglist();
 		}
-		
-	// bgkill, bgstop, bgstart, or pstat 
+
+	// bgkill, bgstop, bgstart, or pstat
 	} else if (command > 1) {
 		// parse for a valid pid
 		pid_t target_pid = parse_pid(strtok(NULL," "));
-			
-		if (target_pid > -1){	
+
+		if (target_pid > -1){
 			//check if target process exists
 			if (!exists(target_pid)) {
 				printf("Error: Process %d does not exist.\n", target_pid);
 				return;
 			}
-		
+
 			if (command == 2) {
 				// bgkill
 				bgkill(target_pid);
@@ -277,8 +280,8 @@ void run_input (char copy[]) {
 			} else {
 				printf("Error: command invalid. How did you get here?\n");
 				return;
-				
-			}		
+
+			}
 		}
 	}
 }
@@ -289,22 +292,22 @@ int main(){
 		char *prompt = "PMan: > ";
 
 		input = readline(prompt);
-		
+
 		// if input give, parse and run if possible
 		if (input) {
-			// make a copy of input for tokenizing 
+			// make a copy of input for tokenizing
 			char copy[MAX_INPUT+1];
 			strncpy (copy, input, MAX_INPUT);
 			run_input(copy);
-			
+
 		}
-		
+
 		// check for status updates
-		
+
 		// HERE
 
 		//printf("%s\n", input);
 	}
-	
+
     exit (0);
 }
