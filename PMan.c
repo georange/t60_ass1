@@ -170,17 +170,6 @@ void bglist() {
 	printf("Total background jobs:\t%d\n", size);
 }
 
-void bgkill(pid_t pid) {
-	bgstart(pid);
-	int killed = kill(pid, SIGTERM);
-	if (killed != -1) {
-		delete(pid);
-		sleep(3);
-	} else {
-		printf("Error: bgkill failed.\n");
-	}
-}
-
 void bgstop(pid_t pid) {
 	int stopped = kill(pid, SIGSTOP);
 	if (stopped != -1) {
@@ -196,6 +185,17 @@ void bgstart(pid_t pid) {
 		sleep(3);
 	} else {
 		printf("Error: bgstart failed.\n");
+	}
+}
+
+void bgkill(pid_t pid) {
+	bgstart(pid);
+	int killed = kill(pid, SIGTERM);
+	if (killed != -1) {
+		delete(pid);
+		sleep(3);
+	} else {
+		printf("Error: bgkill failed.\n");
 	}
 }
 
