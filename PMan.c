@@ -237,7 +237,6 @@ void run_input (char* copy) {
 					i++;
 				}
 			}
-			i++;
 			more_args[i] = NULL;
 			
 			bg(more_args[0], more_args);			
