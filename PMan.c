@@ -80,7 +80,7 @@ void delete(pid_t pid) {
 		curr = curr->next;
 	}
 	
-	printf("Error: process not found.\n");
+	//printf("Error: process not found.\n");
 	return;
 }
 
@@ -298,6 +298,7 @@ void check_status() {
 		if (pid > 0) { 
 
 			if (WIFEXITED(status)) {
+				delete(pid);
 				printf("Background process %d has been terminated.\n", pid); 
 			} else if (WIFSIGNALED(status)) {
 				printf("Background process %d has been killed.\n", pid);
