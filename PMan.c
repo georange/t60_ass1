@@ -189,7 +189,7 @@ void bgstart(pid_t pid) {
 }
 
 void bgkill(pid_t pid) {
-	bgstart(pid);
+	//bgstart(pid);
 	int killed = kill(pid, SIGTERM);
 	if (killed != -1) {
 		delete(pid);
