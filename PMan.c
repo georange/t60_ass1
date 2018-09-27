@@ -208,7 +208,7 @@ void bgkill(pid_t pid) {
 }
 
 char** file_to_list (FILE* infile) {
-	char* buffer[MAX_FILE];
+	char buffer[MAX_FILE];
 	char* list[MAX_INPUT];
 	char* tok;
 	int i = 0;
@@ -221,7 +221,7 @@ char** file_to_list (FILE* infile) {
 			i++;
 		}
 	}
-	fclose(stat_file);
+	fclose(infile);
 	return list;
 }
 
