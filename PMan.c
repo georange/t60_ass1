@@ -131,6 +131,10 @@ pid_t parse_pid (char* input) {
 /** Command Functions **/
 
 void bg(char* program, char* more_args[]) {
+    int status;
+    int retVal;
+	int opts = WNOHANG | WUNTRACED | WCONTINUED;
+	
 	pid_t child_pid = fork();
 	
 	// check if fork is successful
@@ -142,10 +146,12 @@ void bg(char* program, char* more_args[]) {
 			exit(1);
 		// parent process
 		} else {	
-			printf("Started background process %s with pid %d\n",program, child_pid);
-			insert(child_pid, program);
-			sleep(3);
-			
+			retVal = waitpid(pid, &status, opts);
+			if (retVal != 1) {
+				printf("Started background process %s with pid %d\n",program, child_pid);
+				insert(child_pid, program);
+				sleep(3);
+			}		
 		}
 	} else {
 		printf("Error: fork failed.\n");
@@ -238,7 +244,6 @@ void run_input (char* copy) {
 				}
 			}
 			more_args[i] = NULL;
-			
 			bg(more_args[0], more_args);			
 		}
 		
