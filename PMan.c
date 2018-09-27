@@ -200,7 +200,7 @@ void bgstart(pid_t pid) {
 
 void pstat(pid_t pid) {
 	
-	// HERE
+	
 }
 
 
@@ -284,6 +284,32 @@ void run_input (char copy[]) {
 	}
 }
 
+void check_status() {
+	pid_t pid;
+	int status;
+	
+	while(1) {
+		int opts = WNOHANG | WUNTRACED | WCONTINUED;
+		pid = waitpid(-1, &status, opts);
+		if (pid == -1) { 
+			break; 
+		}
+		// Macros below can be found by "$ man 2 waitpid"
+		if (WIFEXITED(status)) {
+    		printf("Background process %d has been terminated.\n", pid); 
+    	} else if (WIFSIGNALED(status)) {
+    		printf("Background process %d has been killed.\n", pid);
+    	} else if (WIFSTOPPED(status)) {
+    		printf("Background process %d has been paused.\n", pid);
+    	} else if (WIFCONTINUED(status)) {    
+      		printf("Background process %d has been continued.\n", pid);   
+   		}
+
+		sleep(1);
+	}
+	
+}
+
 int main(){
 	while(1) {
 		char *input = NULL;
@@ -301,8 +327,7 @@ int main(){
 		}
 		
 		// check for status updates
-		
-		// HERE
+		check_status();
 
 		//printf("%s\n", input);
 	}
