@@ -287,9 +287,9 @@ void run_input (char copy[]) {
 void check_status() {
 	pid_t pid = malloc(sizeof(pid_t));
 	int status = malloc(sizeof(int));
+	int opts = WNOHANG | WUNTRACED | WCONTINUED;
 	
 	while(1) {
-		int opts = WNOHANG; // | WUNTRACED | WCONTINUED;
 		pid = waitpid(-1, &status, opts);
 		if (pid > 0) { 
 
