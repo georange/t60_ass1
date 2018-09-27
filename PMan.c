@@ -242,6 +242,32 @@ void pstat(pid_t pid) {
 			return;
 		}
 		
+		// read and save necessary statuses
+		char status_buffer[MAX_FILE];
+		char* voluntary_ctxt_switches;
+		char* nonvoluntary_ctxt_switches;
+		while (fgets(status_buffer, MAX_FILE-1, status_file)) {
+			if (!strncmp(status_buffer, "voluntary_ctxt_switches", strlen("voluntary_ctxt_switches"))) {
+				voluntary_ctxt_switches = status_buffer;
+			} else if (!strncmp(status_buffer, "nonvoluntary_ctxt_switches", strlen("nonvoluntary_ctxt_switches"))) {
+				nonvoluntary_ctxt_switches = status_buffer;
+			}
+		}
+		fclose(status_file);
+		
+		// print out results
+		double utime = atof(stats[13])/sysconf(_SC_CLK_TCK);
+	    double stime = atof(stats[14])/sysconf(_SC_CLK_TCK);
+		
+		printf("comm:\t%s\n", stats[1]);
+		printf("state:\t%s\n", stats[2]);
+		printf("utime:\t%lf\n", utime);
+		printf("stime:\t%lf\n", stime);
+		printf("rss:\t%s\n", stats[24]);
+		
+		printf("%s", voluntary_ctxt_switches);
+		printf("%s", nonvoluntary_ctxt_switches);
+		
 	} else {
 		printf("Error: process %d does not exist.\n", pid);
 	}
