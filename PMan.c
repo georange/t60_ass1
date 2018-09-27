@@ -207,24 +207,6 @@ void bgkill(pid_t pid) {
 	}
 }
 
-char** file_to_list (FILE* infile) {
-	char buffer[MAX_FILE];
-	char* list[MAX_INPUT];
-	char* tok;
-	int i = 0;
-	while (fgets(buffer, MAX_FILE-1, infile)) {
-		tok = strtok(buffer, " ");
-		//stats[i] = stat_tok;
-		while (tok) {
-			list[i] = tok;
-			tok = strtok(NULL, " ");
-			i++;
-		}
-	}
-	fclose(infile);
-	return list;
-}
-
 void pstat(pid_t pid) {
 	if (exists(pid)) {
 		char stat_path[MAX_INPUT];
@@ -239,15 +221,26 @@ void pstat(pid_t pid) {
 			return;
 		}
 		
-		char** stats = file_to_list(stat_file);	
+		char stat_buffer[MAX_FILE];
+		char* stats[MAX_INPUT];
+		char* stat_tok;
+		int i = 0;
+		while (fgets(stat_buffer, MAX_FILE-1, stat_file)) {
+			stat_tok = strtok(stat_buffer, " ");
+			//stats[i] = stat_tok;
+			while (stat_tok) {
+				stats[i] = stat_tok;
+				stat_tok = strtok(NULL, " ");
+				i++;
+			}
+		}
+		fclose(stat_file);
 		
 		FILE* status_file = fopen(status_path, "r");	
 		if (!status_file)	{
 			printf("Error: could not open status file.");
 			return;
 		}
-		
-		char** statuses = file_to_list(status_file);
 		
 	} else {
 		printf("Error: process %d does not exist.\n", pid);
