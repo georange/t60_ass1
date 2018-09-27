@@ -171,6 +171,7 @@ void bglist() {
 }
 
 void bgkill(pid_t pid) {
+	bgstart(pid);
 	int killed = kill(pid, SIGTERM);
 	if (killed != -1) {
 		delete(pid);
@@ -285,8 +286,8 @@ void run_input (char copy[]) {
 }
 
 void check_status() {
-	pid_t pid = malloc(sizeof(pid_t));
-	int status = malloc(sizeof(int));
+	pid_t pid;
+	int status;
 	int opts = WNOHANG | WUNTRACED | WCONTINUED;
 	
 	while(1) {
