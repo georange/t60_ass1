@@ -208,7 +208,7 @@ void pstat(pid_t pid) {
 /** Main Process Functions **/
 
 // parses user input and runs command if possible
-void run_input (char copy[]) {
+void run_input (char* copy) {
 	char* tok;
 	tok = strtok (copy, " "); 
 	
