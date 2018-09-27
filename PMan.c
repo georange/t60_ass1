@@ -289,12 +289,11 @@ void check_status() {
 	int status;
 	
 	while(1) {
-		int opts = WNOHANG | WUNTRACED | WCONTINUED;
+		int opts = WNOHANG; // | WUNTRACED | WCONTINUED;
 		pid = waitpid(-1, &status, opts);
 		if (pid == -1) { 
 			break; 
 		}
-		// Macros below can be found by "$ man 2 waitpid"
 		if (WIFEXITED(status)) {
     		printf("Background process %d has been terminated.\n", pid); 
     	} else if (WIFSIGNALED(status)) {
