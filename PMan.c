@@ -157,7 +157,7 @@ void bglist() {
 	int size = 0;
 	
 	if (queue_head) {
-		struct node* curr = queue_head->next;
+		struct node* curr = queue_head;
 	
 		//printf("%s\n",queue_head->next->name);
 		while (curr != NULL) {
