@@ -285,8 +285,8 @@ void run_input (char copy[]) {
 }
 
 void check_status() {
-	pid_t pid;
-	int status;
+	pid_t pid = malloc(sizeof(pid_t));
+	int status = malloc(sizeof(int));
 	
 	while(1) {
 		int opts = WNOHANG; // | WUNTRACED | WCONTINUED;
@@ -302,8 +302,8 @@ void check_status() {
 			} else if (WIFCONTINUED(status)) {    
 				printf("Background process %d has been continued.\n", pid);   
 			}
-
 			sleep(1);
+			
 		} else {
 			break;
 		}
