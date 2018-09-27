@@ -10,8 +10,9 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 
-#define MAX_INPUT 200
+#define MAX_INPUT 513
 #define MAX_COMMAND 6
+#define MAX_FILE 1025
 
 // node struct to keep track of each process
 typedef struct node {
@@ -128,7 +129,7 @@ pid_t parse_pid (char* input) {
 }
 
 
-/** Command Functions **/
+/** Main Command Functions **/
 
 void bg(char* program, char* more_args[]) {
     int status;
@@ -194,7 +195,9 @@ void bgstart(pid_t pid) {
 }
 
 void bgkill(pid_t pid) {
-	//bgstart(pid);
+	// restart process to kill
+	bgstart(pid);
+	
 	int killed = kill(pid, SIGTERM);
 	if (killed != -1) {
 		delete(pid);
@@ -204,9 +207,51 @@ void bgkill(pid_t pid) {
 	}
 }
 
+char** file_to_list (FILE* infile) {
+	char* buffer[MAX_FILE];
+	char* list[MAX_INPUT];
+	char* tok;
+	int i = 0;
+	while (fgets(buffer, MAX_FILE-1, infile)) {
+		tok = strtok(buffer, " ");
+		//stats[i] = stat_tok;
+		while (tok) {
+			list[i] = tok;
+			tok = strtok(NULL, " ");
+			i++;
+		}
+	}
+	fclose(stat_file);
+	return list;
+}
+
 void pstat(pid_t pid) {
+	if (exists(pid)) {
+		char stat_path[MAX_INPUT];
+		char status_path[MAX_INPUT];	
+		sprintf(stat_path, "/proc/%d/stat", pid);
+		sprintf(status_path, "/proc/%d/status", pid);
 	
-	
+		// read and save contents of stat file in a list
+		FILE* stat_file = fopen(stat_path, "r");	
+		if (!stat_file)	{
+			printf("Error: could not open stat file.");
+			return;
+		}
+		
+		char** stats = file_to_list(stat_file);	
+		
+		FILE* status_file = fopen(status_path, "r");	
+		if (!status_file)	{
+			printf("Error: could not open status file.");
+			return;
+		}
+		
+		char** statuses = file_to_list(status_file);
+		
+	} else {
+		printf("Error: process %d does not exist.\n", pid);
+	}
 }
 
 
@@ -326,7 +371,7 @@ int main(){
 		// if input give, parse and run if possible
 		if (input) {
 			// make a copy of input for tokenizing 
-			char copy[MAX_INPUT+1];
+			char copy[MAX_INPUT];
 			strncpy (copy, input, MAX_INPUT);
 			run_input(copy);
 			
