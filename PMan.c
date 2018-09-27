@@ -291,20 +291,22 @@ void check_status() {
 	while(1) {
 		int opts = WNOHANG; // | WUNTRACED | WCONTINUED;
 		pid = waitpid(-1, &status, opts);
-		if (pid == -1) { 
-			break; 
-		}
-		if (WIFEXITED(status)) {
-    		printf("Background process %d has been terminated.\n", pid); 
-    	} else if (WIFSIGNALED(status)) {
-    		printf("Background process %d has been killed.\n", pid);
-    	} else if (WIFSTOPPED(status)) {
-    		printf("Background process %d has been paused.\n", pid);
-    	} else if (WIFCONTINUED(status)) {    
-      		printf("Background process %d has been continued.\n", pid);   
-   		}
+		if (pid > 0) { 
 
-		sleep(1);
+			if (WIFEXITED(status)) {
+				printf("Background process %d has been terminated.\n", pid); 
+			} else if (WIFSIGNALED(status)) {
+				printf("Background process %d has been killed.\n", pid);
+			} else if (WIFSTOPPED(status)) {
+				printf("Background process %d has been paused.\n", pid);
+			} else if (WIFCONTINUED(status)) {    
+				printf("Background process %d has been continued.\n", pid);   
+			}
+
+			sleep(1);
+		} else {
+			break;
+		}
 	}
 	
 }
