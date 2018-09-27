@@ -132,7 +132,6 @@ pid_t parse_pid (char* input) {
 
 void bg(char* program, char* more_args[]) {
     int status;
-    int retVal;
 	int opts = WNOHANG | WUNTRACED | WCONTINUED;
 	
 	pid_t child_pid = fork();
@@ -146,8 +145,8 @@ void bg(char* program, char* more_args[]) {
 			exit(1);
 		// parent process
 		} else {	
-			retVal = waitpid(child_pid, &status, opts);
-			if (retVal != 1) {
+			waitpid(child_pid, &status, opts);
+			if (WEXITSTATUS(status) != 1) {
 				printf("Started background process %s with pid %d\n",program, child_pid);
 				insert(child_pid, program);
 				sleep(3);
