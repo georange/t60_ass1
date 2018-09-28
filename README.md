@@ -1,3 +1,4 @@
-# t60_ass1
-school assignment
-no steal
+# CSC 360, Fall 2018, Assignment 1
+
+Georgia Ma
+V00849447
