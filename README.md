@@ -1,4 +1,5 @@
-# CSC 360, Fall 2018, Assignment 1
+# CSC 360 Assignment 1
+Fall 2018   
 
-Georgia Ma
+Georgia Ma  
 V00849447
