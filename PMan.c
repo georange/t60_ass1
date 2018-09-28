@@ -244,8 +244,8 @@ void pstat(pid_t pid) {
 		
 		// read and save necessary statuses
 		char status_buffer[MAX_FILE];
-		char voluntary_ctxt_switches[MAX_FILE];
-		char nonvoluntary_ctxt_switches[MAX_FILE];
+		char voluntary_ctxt_switches[MAX_INPUT];
+		char nonvoluntary_ctxt_switches[MAX_INPUT];
 		while (fgets(status_buffer, MAX_FILE-1, status_file)) {
 			if (!strncmp(status_buffer, "voluntary_ctxt_switches", strlen("voluntary_ctxt_switches"))) {
 				//voluntary_ctxt_switches = status_buffer;
