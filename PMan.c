@@ -249,10 +249,10 @@ void pstat(pid_t pid) {
 		while (fgets(status_buffer, MAX_FILE-1, status_file)) {
 			if (!strncmp(status_buffer, "voluntary_ctxt_switches", strlen("voluntary_ctxt_switches"))) {
 				//voluntary_ctxt_switches = status_buffer;
-				strncpy(voluntary_ctxt_switches, status_buffer, strlen(stat_buffer)+1);
+				strncpy(voluntary_ctxt_switches, status_buffer, strlen(status_buffer)+1);
 			} else if (!strncmp(status_buffer, "nonvoluntary_ctxt_switches", strlen("nonvoluntary_ctxt_switches"))) {
 				//nonvoluntary_ctxt_switches = status_buffer;
-				strncpy(nonvoluntary_ctxt_switches, status_buffer, strlen(stat_buffer)+1);
+				strncpy(nonvoluntary_ctxt_switches, status_buffer, strlen(status_buffer)+1);
 			}
 		}
 		fclose(status_file);
