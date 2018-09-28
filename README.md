@@ -15,9 +15,12 @@ Enclosed in this submission are:
 
 To run inf.c, run the commands:  
 > gcc inf.c -o inf  
-> ./inf <tag> <interval>
+> ./inf (tag) (interval)
   
 To run args.c, run the commands:  
 > gcc args.c -o args  
-> ./inf <args>  
+> ./args (any amount of arguments)  
 
+To run PMan.c, run the commands:
+> make
+> ./PMan
