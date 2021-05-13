@@ -1,2 +1,2 @@
 # class assignment
-don't steal please
+see p1.pdf
